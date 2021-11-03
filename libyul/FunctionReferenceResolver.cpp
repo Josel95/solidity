@@ -58,11 +58,3 @@ void FunctionReferenceResolver::operator()(Block const& _block)
 
 	m_scopes.pop_back();
 }
-
-void FunctionReferenceResolver::operator()(FunctionDefinition const& _function)
-{
-	ScopedSaveAndRestore scopes(m_scopes, {});
-
-	ASTWalker::operator()(_function);
-	yulAssert(m_scopes.empty());
-}

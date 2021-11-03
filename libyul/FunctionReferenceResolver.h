@@ -39,7 +39,6 @@ private:
 	using ASTWalker::operator();
 	void operator()(FunctionCall const& _functionCall) override;
 	void operator()(Block const& _block) override;
-	void operator()(FunctionDefinition const& _functionDefinition) override;
 
 	std::map<FunctionCall const*, FunctionDefinition const*> m_functionReferences;
 	std::vector<std::map<YulString, FunctionDefinition const*>> m_scopes;
