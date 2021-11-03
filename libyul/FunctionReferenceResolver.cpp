@@ -19,12 +19,13 @@
 #include <libyul/FunctionReferenceResolver.h>
 
 #include <libyul/AST.h>
-#include <libsolutil/Common.h>
+#include <libsolutil/CommonData.h>
 
 #include <range/v3/view/reverse.hpp>
 
 using namespace std;
 using namespace solidity::yul;
+using namespace solidity::util;
 
 FunctionReferenceResolver::FunctionReferenceResolver(Block const& _ast)
 {
@@ -35,8 +36,11 @@ FunctionReferenceResolver::FunctionReferenceResolver(Block const& _ast)
 void FunctionReferenceResolver::operator()(FunctionCall const& _functionCall)
 {
 	for (auto&& scope: m_scopes | ranges::views::reverse)
-		if (scope.count(_functionCall.functionName.name))
-			m_functionReferences[&_functionCall] = scope.at(_functionCall.functionName.name);
+		if (FunctionDefinition const** function = util::valueOrNullptr(scope, _functionCall.functionName.name))
+		{
+			m_functionReferences[&_functionCall] = *function;
+			break;
+		}
 
 	// If we did not find anything, it was a builtin call.
 
