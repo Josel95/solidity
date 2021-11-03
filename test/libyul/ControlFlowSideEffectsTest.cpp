@@ -22,6 +22,7 @@
 #include <test/libyul/Common.h>
 
 #include <libyul/Object.h>
+#include <libyul/AST.h>
 #include <libyul/ControlFlowSideEffects.h>
 #include <libyul/ControlFlowSideEffectsCollector.h>
 #include <libyul/backends/evm/EVMDialect.h>
@@ -61,19 +62,20 @@ TestCase::TestResult ControlFlowSideEffectsTest::run(ostream& _stream, string co
 	if (!obj.code)
 		BOOST_THROW_EXCEPTION(runtime_error("Parsing input failed."));
 
-	std::map<YulString, ControlFlowSideEffects> sideEffects =
-		ControlFlowSideEffectsCollector(
-			EVMDialect::strictAssemblyForEVMObjects(langutil::EVMVersion()),
-			*obj.code
-		).functionSideEffects();
-
-	std::map<std::string, std::string> controlFlowSideEffectsStr;
-	for (auto&& [fun, effects]: sideEffects)
-		controlFlowSideEffectsStr[fun.str()] = toString(effects);
-
-	m_obtainedResult.clear();
-	for (auto&& [functionName, effect]: controlFlowSideEffectsStr)
-		m_obtainedResult += functionName + (effect.empty() ? ":" : ": " + effect) + "\n";
+	ControlFlowSideEffectsCollector sideEffects(
+		EVMDialect::strictAssemblyForEVMObjects(langutil::EVMVersion()),
+		*obj.code
+	);
+	std::vector<std::string> result;
+	for (auto&& [function, effects]: sideEffects.functionSideEffects())
+	{
+		string effectStr = toString(effects);
+		result.emplace_back(
+			function->name.str() + (effectStr.empty() ? ":" : ": " + effectStr) + "\n"
+		);
+	}
+	sort(result.begin(), result.end());
+	m_obtainedResult = util::joinHumanReadable(result, "");
 
 	return checkResult(_stream, _linePrefix, _formatted);
 }
