@@ -178,6 +178,7 @@ ControlFlowSideEffectsCollector::ControlFlowSideEffectsCollector(
 		m_processedNodes[function] = {};
 		m_pendingNodes[function].push_front(flow.entry);
 		m_functionSideEffects[function] = {false, false, false};
+		m_functionCalls[function] = {};
 	}
 
 	// Process functions while we have progress. For now, we are only interested
