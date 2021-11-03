@@ -168,7 +168,8 @@ ControlFlowSideEffectsCollector::ControlFlowSideEffectsCollector(
 	Block const& _ast
 ):
 	m_dialect(_dialect),
-	m_cfgBuilder(_ast)
+	m_cfgBuilder(_ast),
+	m_functionReferences(FunctionReferenceResolver{_ast}.references())
 {
 	for (auto&& [function, flow]: m_cfgBuilder.functionFlows())
 	{
@@ -222,7 +223,6 @@ ControlFlowSideEffectsCollector::ControlFlowSideEffectsCollector(
 		};
 		_visit(*function, _visit);
 	}
-
 }
 
 map<YulString, ControlFlowSideEffects> ControlFlowSideEffectsCollector::functionSideEffectsNamed() const
