@@ -46,10 +46,10 @@
 }
 // ----
 // a: can continue
-// b: can continue
 // b2: can revert, can continue
-// c: can continue
+// b: can continue
 // c2: can continue
+// c: can continue
 // d: can revert, can continue
 // e: can revert, can continue
 // f: can revert, can continue
